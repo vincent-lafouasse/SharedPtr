@@ -13,5 +13,10 @@ PRIVATE
 
 target_include_directories(tests
 PUBLIC
-    ${CMAKE_SOURCE_DIR}
+    .
+)
+
+target_link_libraries(tests
+PRIVATE
+	SharedPtr
 )
