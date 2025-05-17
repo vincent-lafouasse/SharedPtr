@@ -24,6 +24,7 @@ class SharedPtr {
 
     ElementType& operator*() const;
     ElementType* operator->() const;
+    operator bool() const;
 
    private:
     ElementType* self;
@@ -113,4 +114,9 @@ T& SharedPtr<T>::operator*() const {
 template <typename T>
 T* SharedPtr<T>::operator->() const {
     return self;
+}
+
+template <typename T>
+SharedPtr<T>::operator bool() const {
+    return self != NULL;
 }

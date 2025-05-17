@@ -15,5 +15,7 @@ int main() {
     SharedPtr<int> copy2(p);
     SharedPtr<int> copy3 = copy2;
 
-    std::cout << "p contains:\t" << *p << std::endl;
+    if (p) {
+        std::cout << "p contains:\t" << *p << std::endl;
+    }
 }
