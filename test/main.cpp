@@ -47,8 +47,8 @@ void aggregate() {
 
 void overwrite() {
     std::clog << "\nOverwrite test:\n";
-    SharedPtr<char> c1(new char(1));
-    SharedPtr<char> c2(new char(2));
+    SharedPtr<char> c1(new char('c'));
+    SharedPtr<char> c2(new char('a'));
 
     c1 = c2;
 }
