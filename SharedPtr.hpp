@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#define LOGGING 1
+#define LOGGING 0
 #if LOGGING
 #include <iostream>
 
@@ -21,6 +21,9 @@ class SharedPtr {
     SharedPtr(ElementType* p);
     SharedPtr(const SharedPtr& other);
     ~SharedPtr();
+
+    ElementType& operator*() const;
+    ElementType* operator->() const;
 
    private:
     ElementType* self;
@@ -100,4 +103,14 @@ SharedPtr<T>::~SharedPtr() {
         delete self;
         delete count;
     }
+}
+
+template <typename T>
+T& SharedPtr<T>::operator*() const {
+    return *self;
+}
+
+template <typename T>
+T* SharedPtr<T>::operator->() const {
+    return self;
 }
