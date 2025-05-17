@@ -53,7 +53,6 @@ void overwrite() {
     c1 = c2;
 }
 
-
 int main() {
     copies_galore();
     aggregate();
