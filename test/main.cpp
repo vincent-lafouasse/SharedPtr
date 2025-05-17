@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <vector>
 
 struct Yoink {
     Yoink(SharedPtr<int> ptr) : p(ptr) {}
