@@ -14,6 +14,9 @@
 template <typename T>
 class SharedPtr {
    public:
+    typedef T ElementType;
+    typedef std::size_t SizeType;
+
     SharedPtr() {
         #if LOGGING
         LOG();
@@ -42,7 +45,7 @@ class SharedPtr {
         return *this;
     }
 
-    SharedPtr(T* p) {
+    SharedPtr(ElementType* p) {
         #if LOGGING
         LOG();
         #endif
@@ -51,7 +54,7 @@ class SharedPtr {
             *this = SharedPtr();
         } else {
             self = p;
-            count = new std::size_t(1);
+            count = new SizeType(1);
         }
     }
 
@@ -85,6 +88,6 @@ class SharedPtr {
     }
 
    private:
-    T* self;
-    std::size_t* count;
+    ElementType* self;
+    SizeType* count;
 };
