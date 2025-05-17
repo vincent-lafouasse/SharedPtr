@@ -6,8 +6,7 @@
 #if LOGGING
 #include <iostream>
 
-#define LOG() \
-    std::clog << __PRETTY_FUNCTION__ << std::endl;
+#define LOG() std::clog << __PRETTY_FUNCTION__ << std::endl;
 
 #endif
 
@@ -18,18 +17,18 @@ class SharedPtr {
     typedef std::size_t SizeType;
 
     SharedPtr() {
-        #if LOGGING
+#if LOGGING
         LOG();
-        #endif
+#endif
 
         self = NULL;
         count = NULL;
     }
 
     SharedPtr& operator=(const SharedPtr& other) {
-        #if LOGGING
+#if LOGGING
         LOG();
-        #endif
+#endif
 
         if (this == &other) {
             return *this;
@@ -46,9 +45,9 @@ class SharedPtr {
     }
 
     SharedPtr(ElementType* p) {
-        #if LOGGING
+#if LOGGING
         LOG();
-        #endif
+#endif
 
         if (p == NULL) {
             *this = SharedPtr();
@@ -59,9 +58,9 @@ class SharedPtr {
     }
 
     SharedPtr(const SharedPtr& other) {
-        #if LOGGING
+#if LOGGING
         LOG();
-        #endif
+#endif
 
         if (other.self == NULL) {
             *this = SharedPtr();
@@ -71,9 +70,9 @@ class SharedPtr {
     }
 
     ~SharedPtr() {
-        #if LOGGING
+#if LOGGING
         LOG();
-        #endif
+#endif
 
         if (self == NULL) {
             return;
