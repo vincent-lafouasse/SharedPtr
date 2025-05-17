@@ -19,6 +19,7 @@ struct Aggregate {
 };
 
 void copies_galore() {
+    std::clog << "\nCopies test:\n";
     SharedPtr<int> p(new int(420));
 
     Yoink copy1(p);
@@ -31,6 +32,7 @@ void copies_galore() {
 }
 
 void aggregate() {
+    std::clog << "\nAggregate test:\n";
     int data[] = {1, 2, 3};
     std::size_t sz = sizeof(data) / sizeof(*data);
     SharedPtr<Aggregate> a(
@@ -43,7 +45,17 @@ void aggregate() {
     assert(a->v.at(2) == 3);
 }
 
+void overwrite() {
+    std::clog << "\nOverwrite test:\n";
+    SharedPtr<char> c1(new char(1));
+    SharedPtr<char> c2(new char(2));
+
+    c1 = c2;
+}
+
+
 int main() {
     copies_galore();
     aggregate();
+    overwrite();
 }
