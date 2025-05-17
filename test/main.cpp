@@ -45,4 +45,5 @@ void aggregate() {
 
 int main() {
     copies_galore();
+    aggregate();
 }
