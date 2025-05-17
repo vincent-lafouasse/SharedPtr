@@ -9,7 +9,7 @@ struct Yoink {
 };
 
 int main() {
-    SharedPtr<int> p;
+    SharedPtr<int> p(new int(420));
 
     Yoink copy1(p);
     SharedPtr<int> copy2(p);

@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#define LOGGING 0
+#define LOGGING 1
 #if LOGGING
 #include <iostream>
 
@@ -26,7 +26,7 @@ class SharedPtr {
     ElementType* operator->() const;
     operator bool() const;
 
-   private:
+   public:
     ElementType* self;
     SizeType* count;
 };
@@ -47,17 +47,19 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     LOG();
 #endif
 
-    if (this == &other) {
+    if (this == &other || self == other.self) {
         return *this;
     }
 
     if (other.self == NULL) {
         self = NULL;
         count = NULL;
-    } else {
-        self = other.self;
-        *count += 1;
+        return *this;
     }
+
+    self = other.self;
+    count = other.count;
+    *count += 1;
     return *this;
 }
 
