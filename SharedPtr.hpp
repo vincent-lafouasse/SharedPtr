@@ -47,7 +47,7 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     LOG();
 #endif
 
-    if (this == &other || self == other.self) {
+    if (this == &other) {
         return *this;
     }
 
