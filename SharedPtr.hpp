@@ -12,12 +12,24 @@
 #define WHITE "\033[0;37m"
 #define RESET "\033[0m"
 
-#define LOGGING 1
+#define LOGGING 0
 #if LOGGING
 #include <iostream>
+#endif
+
+#if LOGGING
 #define LOG(color) \
     std::clog << color << __PRETTY_FUNCTION__ << RESET << std::endl;
-#endif
+#define LOG_DATA_DELETION(ptr)                                            \
+    std::clog << RED << "-- Deleting " << static_cast<void*>(ptr) << "\n" \
+              << RESET;
+#define LOG_REFCOUNTER_DELETION() \
+    std::clog << RED << "-- Deleting ref counter\n" << RESET;
+#else  // !LOGGING
+#define LOG(color) ;
+#define LOG_DATA_DELETION(ptr) ;
+#define LOG_REFCOUNTER_DELETION() ;
+#endif  // LOGGING
 
 #include <cassert>
 
@@ -43,31 +55,26 @@ class RefCounter {
     ~RefCounter() {}
 
     void init() {
-#if LOGGING
         LOG(WHITE);
-#endif
+
         this->count = new SizeType(1);
     }
 
     void increment() const {
-#if LOGGING
         LOG(PURPLE);
-#endif
+
         assert(this->count != NULL);
         *(this->count) += 1;
     }
 
     void decrement() {
-#if LOGGING
         LOG(YELLOW);
-#endif
+
         assert(this->count != NULL);
         *(this->count) -= 1;
         if (*(this->count) == 0) {
+            LOG_REFCOUNTER_DELETION();
             delete this->count;
-#if LOGGING
-            std::clog << RED << "-- Deleting ref counter\n" << RESET;
-#endif
             this->count = NULL;
         }
     }
@@ -105,16 +112,12 @@ class SharedPtr {
 
 template <typename T>
 SharedPtr<T>::SharedPtr() : self(NULL), count() {
-#if LOGGING
     LOG(GREEN);
-#endif
 }
 
 template <typename T>
 SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
-#if LOGGING
     LOG(BLUE);
-#endif
 
     if (this == &other) {
         return *this;
@@ -125,12 +128,8 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     }
 
     if (this->count.get() == 1) {
-// last reference about to get destroyed
-#if LOGGING
-        std::clog << RED << "-- Deleting " << static_cast<void*>(this->self)
-                  << "\n"
-                  << RESET;
-#endif
+        // last reference about to get destroyed
+        LOG_DATA_DELETION(this->self);
         delete this->self;
     }
 
@@ -142,9 +141,7 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
 
 template <typename T>
 SharedPtr<T>::SharedPtr(ElementType* p) : self(NULL), count() {
-#if LOGGING
     LOG(GREEN);
-#endif
 
     if (p != NULL) {
         this->self = p;
@@ -154,9 +151,7 @@ SharedPtr<T>::SharedPtr(ElementType* p) : self(NULL), count() {
 
 template <typename T>
 SharedPtr<T>::SharedPtr(const SharedPtr& other) : self(NULL), count() {
-#if LOGGING
     LOG(GREEN);
-#endif
 
     if (other) {
         *this = other;
@@ -165,9 +160,7 @@ SharedPtr<T>::SharedPtr(const SharedPtr& other) : self(NULL), count() {
 
 template <typename T>
 SharedPtr<T>::~SharedPtr() {
-#if LOGGING
     LOG(RED);
-#endif
 
     if (this->self == NULL) {
         assert(!this->count);
@@ -176,11 +169,7 @@ SharedPtr<T>::~SharedPtr() {
 
     this->count.decrement();
     if (!this->count) {
-#if LOGGING
-        std::clog << RED << "-- Deleting " << static_cast<void*>(this->self)
-                  << "\n"
-                  << RESET;
-#endif
+        LOG_DATA_DELETION(this->self);
         delete this->self;
     }
 }
@@ -202,6 +191,7 @@ SharedPtr<T>::operator bool() const {
 
 template <typename T>
 void SharedPtr<T>::log() const {
+#if LOGGING
     std::clog << "SharedPtr " << this << " {\n";
     std::clog << "\tself:\t\t" << static_cast<void*>(this->self) << ",\n";
     if (self) {
@@ -209,4 +199,5 @@ void SharedPtr<T>::log() const {
     }
     std::clog << "\tref count:\t" << this->count.get() << "\n";
     std::clog << "}\n";
+#endif
 }
