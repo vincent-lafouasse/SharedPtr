@@ -49,7 +49,7 @@ class RefCounter {
         this->count = new SizeType(1);
     }
 
-    void increment() {
+    void increment() const {
 #if LOGGING
         LOG(PURPLE);
 #endif
@@ -127,7 +127,8 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     if (this->count.get() == 1) {
 // last reference about to get destroyed
 #if LOGGING
-        std::clog << RED << "-- Deleting " << (void*)this->self << "\n"
+        std::clog << RED << "-- Deleting " << static_cast<void*>(this->self)
+                  << "\n"
                   << RESET;
 #endif
         delete this->self;
@@ -176,7 +177,8 @@ SharedPtr<T>::~SharedPtr() {
     this->count.decrement();
     if (!this->count) {
 #if LOGGING
-        std::clog << RED << "-- Deleting " << (void*)this->self << "\n"
+        std::clog << RED << "-- Deleting " << static_cast<void*>(this->self)
+                  << "\n"
                   << RESET;
 #endif
         delete this->self;
@@ -201,7 +203,7 @@ SharedPtr<T>::operator bool() const {
 template <typename T>
 void SharedPtr<T>::log() const {
     std::clog << "SharedPtr " << this << " {\n";
-    std::clog << "\tself:\t\t" << (void*)this->self << ",\n";
+    std::clog << "\tself:\t\t" << static_cast<void*>(this->self) << ",\n";
     if (self) {
         std::clog << "\tcontains:\t" << *this->self << ",\n";
     }
