@@ -8,6 +8,8 @@
 #define LOG() std::clog << __PRETTY_FUNCTION__ << std::endl;
 #endif
 
+#include <cassert>
+
 template <typename T>
 class SharedPtr {
    public:
