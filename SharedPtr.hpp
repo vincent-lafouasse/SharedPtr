@@ -27,6 +27,8 @@ class SharedPtr {
     operator bool() const;
 
    public:
+    void log() const;
+
     ElementType* self;
     SizeType* count;
 };
@@ -121,4 +123,15 @@ T* SharedPtr<T>::operator->() const {
 template <typename T>
 SharedPtr<T>::operator bool() const {
     return self != NULL;
+}
+
+template <typename T>
+void SharedPtr<T>::log() const {
+    std::clog << "SharedPtr " << this << " {\n";
+    std::clog << "\tself:\t\t" << (void*)this->self << ",\n";
+    if (self) {
+        std::clog << "\tcontains:\t" << *this->self << ",\n";
+    }
+    std::clog << "\tref count:\t" << (this->count ? *this->count : 0) << "\n";
+    std::clog << "}\n";
 }

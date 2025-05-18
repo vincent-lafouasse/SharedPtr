@@ -50,7 +50,17 @@ void overwrite() {
     SharedPtr<char> c1(new char('c'));
     SharedPtr<char> c2(new char('a'));
 
+    std::clog << "c1: ";
+    c1.log();
+    std::clog << "c2: ";
+    c2.log();
+
     c1 = c2;
+
+    std::clog << "c1: ";
+    c1.log();
+    std::clog << "c2: ";
+    c2.log();
 }
 
 int main() {
