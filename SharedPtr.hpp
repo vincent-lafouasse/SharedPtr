@@ -189,6 +189,6 @@ void SharedPtr<T>::log() const {
     if (self) {
         std::clog << "\tcontains:\t" << *this->self << ",\n";
     }
-    std::clog << "\tref count:\t" << (this->count ? *this->count : 0) << "\n";
+    std::clog << "\tref count:\t" << this->count.get() << "\n";
     std::clog << "}\n";
 }
