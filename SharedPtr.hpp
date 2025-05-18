@@ -62,6 +62,10 @@ class RefCounter {
         }
     }
 
+    SizeType get() const {
+        return this->count ? *this->count : 0;
+    }
+
     operator bool() const { return this->count != NULL; }
 
    public:
@@ -112,11 +116,9 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
         return *this;
     }
 
-    if (*this) {
-        this->count.decrement();
-        if (!this->count) {
-            delete this->self;
-        }
+    if (this->count.get() == 1) {
+        // last reference about to get destroyed
+        delete this->self;
     }
 
     this->self = other.self;
