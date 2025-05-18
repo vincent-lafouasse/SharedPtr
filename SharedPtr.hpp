@@ -54,14 +54,47 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     }
 
     if (other.self == NULL) {
-        self = NULL;
-        count = NULL;
+        if (this->self == NULL) {
+            // this should already be zero'd
+            // this is a no-op
+            return *this;
+        }
+
+        assert(this->count != NULL);
+        *(this->count) -= 1;
+
+        if (*(this->count) == 0) {
+            delete self;
+            delete count;
+        }
+
+        this->self = NULL;
+        this->count = NULL;
         return *this;
     }
 
-    self = other.self;
-    count = other.count;
-    *count += 1;
+    assert(other.self != NULL);
+    assert(other.count != NULL);
+
+    if (this->self == other.self) {
+        return *this;
+    }
+
+    if (this->self != NULL) {
+        // optionally overwrite this if active
+        assert(this->count != NULL);
+        *(this->count) -= 1;
+
+        if (*(this->count) == 0) {
+            delete self;
+            delete count;
+        }
+    }
+
+    this->self = other.self;
+    this->count = other.count;
+    *(this->count) += 1;
+
     return *this;
 }
 
@@ -72,10 +105,11 @@ SharedPtr<T>::SharedPtr(ElementType* p) {
 #endif
 
     if (p == NULL) {
-        *this = SharedPtr();
+        this->self = NULL;
+        this->count = NULL;
     } else {
-        self = p;
-        count = new SizeType(1);
+        this->self = p;
+        this->count = new SizeType(1);
     }
 }
 
@@ -85,9 +119,10 @@ SharedPtr<T>::SharedPtr(const SharedPtr& other) {
     LOG();
 #endif
 
-    if (other.self == NULL) {
-        *this = SharedPtr();
-    } else {
+    this->self = NULL;
+    this->count = NULL;
+
+    if (other.self) {
         *this = other;
     }
 }
