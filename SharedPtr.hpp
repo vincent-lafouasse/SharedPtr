@@ -10,11 +10,69 @@
 
 #include <cassert>
 
+class RefCounter {
+   public:
+    typedef std::size_t SizeType;
+
+    RefCounter() : count(NULL) {}
+
+    RefCounter& operator=(const RefCounter& other) {
+        if (*this) {
+            this->decrement();
+        }
+
+        this->count = other.count;
+        if (other) {
+            this->increment();
+        }
+
+        return *this;
+    }
+
+    ~RefCounter() {
+        if (*this) {
+            this->decrement();
+        }
+    }
+
+    void init() {
+#if LOGGING
+        LOG();
+#endif
+        this->count = new SizeType(1);
+    }
+
+    void increment() {
+#if LOGGING
+        LOG();
+#endif
+        assert(this->count != NULL);
+        *(this->count) += 1;
+    }
+
+    void decrement() {
+#if LOGGING
+        LOG();
+#endif
+        assert(this->count != NULL);
+        *(this->count) -= 1;
+        if (*(this->count) == 0) {
+            delete this->count;
+            this->count = NULL;
+        }
+    }
+
+    operator bool() const { return this->count != NULL; }
+
+   public:
+    SizeType* count;
+};
+
 template <typename T>
 class SharedPtr {
    public:
     typedef T ElementType;
-    typedef std::size_t SizeType;
+    typedef RefCounter::SizeType SizeType;
 
     SharedPtr();
     SharedPtr& operator=(const SharedPtr& other);
@@ -30,17 +88,14 @@ class SharedPtr {
     void log() const;
 
     ElementType* self;
-    SizeType* count;
+    RefCounter count;
 };
 
 template <typename T>
-SharedPtr<T>::SharedPtr() {
+SharedPtr<T>::SharedPtr() : self(NULL), count() {
 #if LOGGING
     LOG();
 #endif
-
-    self = NULL;
-    count = NULL;
 }
 
 template <typename T>
@@ -53,76 +108,42 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
         return *this;
     }
 
-    if (other.self == NULL) {
-        if (this->self == NULL) {
-            // this should already be zero'd
-            // no-op
-            return *this;
-        }
-
-        assert(this->count != NULL);
-        *(this->count) -= 1;
-
-        if (*(this->count) == 0) {
-            delete self;
-            delete count;
-        }
-
-        this->self = NULL;
-        this->count = NULL;
+    if (*this && other && this->self == other.self) {
         return *this;
     }
 
-    assert(other.self != NULL);
-    assert(other.count != NULL);
-
-    if (this->self == other.self) {
-        return *this;
-    }
-
-    if (this->self != NULL) {
-        // optionally overwrite this if active
-        assert(this->count != NULL);
-        *(this->count) -= 1;
-
-        if (*(this->count) == 0) {
-            delete self;
-            delete count;
+    if (*this) {
+        this->count.decrement();
+        if (!this->count) {
+            delete this->self;
         }
     }
 
     this->self = other.self;
     this->count = other.count;
-    *(this->count) += 1;
 
     return *this;
 }
 
 template <typename T>
-SharedPtr<T>::SharedPtr(ElementType* p) {
+SharedPtr<T>::SharedPtr(ElementType* p) : self(NULL), count() {
 #if LOGGING
     LOG();
 #endif
 
-    if (p == NULL) {
-        this->self = NULL;
-        this->count = NULL;
-    } else {
+    if (p != NULL) {
         this->self = p;
-        this->count = new SizeType(1);
+        this->count.init();
     }
 }
 
 template <typename T>
-SharedPtr<T>::SharedPtr(const SharedPtr& other) {
+SharedPtr<T>::SharedPtr(const SharedPtr& other) : self(NULL), count() {
 #if LOGGING
     LOG();
 #endif
 
-    this->self = NULL;
-    this->count = NULL;
-
-    if (other.self) {
+    if (other) {
         *this = other;
     }
 }
@@ -133,15 +154,14 @@ SharedPtr<T>::~SharedPtr() {
     LOG();
 #endif
 
-    if (self == NULL) {
+    if (this->self == NULL) {
+        assert(!this->count);
         return;
     }
 
-    *count -= 1;
-
-    if (*count == 0) {
-        delete self;
-        delete count;
+    this->count.decrement();
+    if (!this->count) {
+        delete this->self;
     }
 }
 
