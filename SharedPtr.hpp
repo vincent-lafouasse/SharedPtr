@@ -40,11 +40,7 @@ class RefCounter {
         return *this;
     }
 
-    ~RefCounter() {
-        if (*this) {
-            this->decrement();
-        }
-    }
+    ~RefCounter() {}
 
     void init() {
 #if LOGGING
@@ -69,6 +65,9 @@ class RefCounter {
         *(this->count) -= 1;
         if (*(this->count) == 0) {
             delete this->count;
+#if LOGGING
+            std::clog << RED << "-- Deleting ref counter\n" << RESET;
+#endif
             this->count = NULL;
         }
     }
@@ -126,7 +125,11 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     }
 
     if (this->count.get() == 1) {
-        // last reference about to get destroyed
+// last reference about to get destroyed
+#if LOGGING
+        std::clog << RED << "-- Deleting " << (void*)this->self << "\n"
+                  << RESET;
+#endif
         delete this->self;
     }
 
@@ -172,6 +175,10 @@ SharedPtr<T>::~SharedPtr() {
 
     this->count.decrement();
     if (!this->count) {
+#if LOGGING
+        std::clog << RED << "-- Deleting " << (void*)this->self << "\n"
+                  << RESET;
+#endif
         delete this->self;
     }
 }
