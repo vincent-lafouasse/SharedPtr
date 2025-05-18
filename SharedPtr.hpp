@@ -56,7 +56,7 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
     if (other.self == NULL) {
         if (this->self == NULL) {
             // this should already be zero'd
-            // this is a no-op
+            // no-op
             return *this;
         }
 
