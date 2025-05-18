@@ -57,6 +57,7 @@ void overwrite() {
 }
 
 int main() {
+    // those tests are meant to be ran with memcheck
     copies_galore();
     aggregate();
     overwrite();
