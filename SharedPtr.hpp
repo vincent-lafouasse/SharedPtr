@@ -191,6 +191,7 @@ SharedPtr<T>::operator bool() const {
 
 template <typename T>
 void SharedPtr<T>::log() const {
+    (void)this;
 #if LOGGING
     std::clog << "SharedPtr " << this << " {\n";
     std::clog << "\tself:\t\t" << static_cast<void*>(this->self) << ",\n";
