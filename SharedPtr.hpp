@@ -18,7 +18,7 @@
 #endif
 
 #if LOGGING
-#define LOG(color) \
+#define LOG_FUNCTION_NAME(color) \
     std::clog << color << __PRETTY_FUNCTION__ << RESET << std::endl;
 #define LOG_DATA_DELETION(ptr)                                            \
     std::clog << RED << "-- Deleting " << static_cast<void*>(ptr) << "\n" \
@@ -26,7 +26,7 @@
 #define LOG_REFCOUNTER_DELETION() \
     std::clog << RED << "-- Deleting ref counter\n" << RESET;
 #else  // !LOGGING
-#define LOG(color) ;
+#define LOG_FUNCTION_NAME(color) ;
 #define LOG_DATA_DELETION(ptr) ;
 #define LOG_REFCOUNTER_DELETION() ;
 #endif  // LOGGING
@@ -55,20 +55,20 @@ class RefCounter {
     ~RefCounter() {}
 
     void init() {
-        LOG(WHITE);
+        LOG_FUNCTION_NAME(WHITE);
 
         this->count = new SizeType(1);
     }
 
     void increment() const {
-        LOG(PURPLE);
+        LOG_FUNCTION_NAME(PURPLE);
 
         assert(this->count != NULL);
         *(this->count) += 1;
     }
 
     void decrement() {
-        LOG(YELLOW);
+        LOG_FUNCTION_NAME(YELLOW);
 
         assert(this->count != NULL);
         *(this->count) -= 1;
@@ -112,12 +112,12 @@ class SharedPtr {
 
 template <typename T>
 SharedPtr<T>::SharedPtr() : self(NULL), count() {
-    LOG(GREEN);
+    LOG_FUNCTION_NAME(GREEN);
 }
 
 template <typename T>
 SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
-    LOG(BLUE);
+    LOG_FUNCTION_NAME(BLUE);
 
     if (this == &other) {
         return *this;
@@ -141,7 +141,7 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
 
 template <typename T>
 SharedPtr<T>::SharedPtr(ElementType* p) : self(NULL), count() {
-    LOG(GREEN);
+    LOG_FUNCTION_NAME(GREEN);
 
     if (p != NULL) {
         this->self = p;
@@ -151,7 +151,7 @@ SharedPtr<T>::SharedPtr(ElementType* p) : self(NULL), count() {
 
 template <typename T>
 SharedPtr<T>::SharedPtr(const SharedPtr& other) : self(NULL), count() {
-    LOG(GREEN);
+    LOG_FUNCTION_NAME(GREEN);
 
     if (other) {
         *this = other;
@@ -160,7 +160,7 @@ SharedPtr<T>::SharedPtr(const SharedPtr& other) : self(NULL), count() {
 
 template <typename T>
 SharedPtr<T>::~SharedPtr() {
-    LOG(RED);
+    LOG_FUNCTION_NAME(RED);
 
     if (this->self == NULL) {
         assert(!this->count);
