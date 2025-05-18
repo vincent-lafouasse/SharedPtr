@@ -5,9 +5,7 @@
 #define LOGGING 1
 #if LOGGING
 #include <iostream>
-
 #define LOG() std::clog << __PRETTY_FUNCTION__ << std::endl;
-
 #endif
 
 template <typename T>
