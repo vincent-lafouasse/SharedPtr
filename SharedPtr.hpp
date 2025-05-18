@@ -88,7 +88,7 @@ class SharedPtr {
 
     SharedPtr();
     SharedPtr& operator=(const SharedPtr& other);
-    SharedPtr(ElementType* p);
+    explicit SharedPtr(ElementType* p);
     SharedPtr(const SharedPtr& other);
     ~SharedPtr();
 
