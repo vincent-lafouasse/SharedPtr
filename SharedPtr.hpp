@@ -2,10 +2,21 @@
 
 #include <cstddef>
 
+#define RED "\033[0;31m"
+#define BLUE "\033[0;34m"
+#define GREEN "\033[0;32m"
+
+#define PURPLE "\033[0;35m"
+#define YELLOW "\033[0;33m"
+
+#define WHITE "\033[0;37m"
+#define RESET "\033[0m"
+
 #define LOGGING 1
 #if LOGGING
 #include <iostream>
-#define LOG() std::clog << __PRETTY_FUNCTION__ << std::endl;
+#define LOG(color) \
+    std::clog << color << __PRETTY_FUNCTION__ << RESET << std::endl;
 #endif
 
 #include <cassert>
@@ -37,14 +48,14 @@ class RefCounter {
 
     void init() {
 #if LOGGING
-        LOG();
+        LOG(WHITE);
 #endif
         this->count = new SizeType(1);
     }
 
     void increment() {
 #if LOGGING
-        LOG();
+        LOG(PURPLE);
 #endif
         assert(this->count != NULL);
         *(this->count) += 1;
@@ -52,7 +63,7 @@ class RefCounter {
 
     void decrement() {
 #if LOGGING
-        LOG();
+        LOG(YELLOW);
 #endif
         assert(this->count != NULL);
         *(this->count) -= 1;
@@ -62,9 +73,7 @@ class RefCounter {
         }
     }
 
-    SizeType get() const {
-        return this->count ? *this->count : 0;
-    }
+    SizeType get() const { return this->count ? *this->count : 0; }
 
     operator bool() const { return this->count != NULL; }
 
@@ -98,14 +107,14 @@ class SharedPtr {
 template <typename T>
 SharedPtr<T>::SharedPtr() : self(NULL), count() {
 #if LOGGING
-    LOG();
+    LOG(GREEN);
 #endif
 }
 
 template <typename T>
 SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
 #if LOGGING
-    LOG();
+    LOG(BLUE);
 #endif
 
     if (this == &other) {
@@ -130,7 +139,7 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other) {
 template <typename T>
 SharedPtr<T>::SharedPtr(ElementType* p) : self(NULL), count() {
 #if LOGGING
-    LOG();
+    LOG(GREEN);
 #endif
 
     if (p != NULL) {
@@ -142,7 +151,7 @@ SharedPtr<T>::SharedPtr(ElementType* p) : self(NULL), count() {
 template <typename T>
 SharedPtr<T>::SharedPtr(const SharedPtr& other) : self(NULL), count() {
 #if LOGGING
-    LOG();
+    LOG(GREEN);
 #endif
 
     if (other) {
@@ -153,7 +162,7 @@ SharedPtr<T>::SharedPtr(const SharedPtr& other) : self(NULL), count() {
 template <typename T>
 SharedPtr<T>::~SharedPtr() {
 #if LOGGING
-    LOG();
+    LOG(RED);
 #endif
 
     if (this->self == NULL) {
